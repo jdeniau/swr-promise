@@ -1,7 +1,7 @@
 import concurPromise from "concur-promise";
 import throttle from "lodash.throttle";
 import isEqual from "lodash.isequal";
-import Store from "./store";
+import Store, { StoreInterface } from "./store";
 
 const queueMacroTasks =
   typeof requestIdleCallback !== "undefined" ? requestIdleCallback : setTimeout;
@@ -61,17 +61,17 @@ export interface Options<V> {
   cacheFulfilled?: (args: any[], value: unknown) => boolean;
   cacheRejected?: (args: any[], error: unknown) => boolean;
   argsEqual?: (a: any[], b: any[]) => boolean;
-  storeCreator?: (promiseFn: PromiseFn<V>) => Store;
+  storeCreator?: (promiseFn: PromiseFn<V>) => StoreInterface;
   onEmitted?: (
     event: OnEmittedEventName,
-    info: { cache: Store<any, CacheNode>; gcCount?: number; args?: any[] }
+    info: { cache: StoreInterface<any, CacheNode>; gcCount?: number; args?: any[] }
   ) => void;
 }
 
 export type PromiseFn<V> = (...args: any[]) => Promise<V>;
 
-let cacheStore: Store;
-function createCacheStore(): Store {
+let cacheStore: StoreInterface;
+function createCacheStore(): StoreInterface {
   if (!cacheStore) {
     cacheStore = new Store();
   }
@@ -259,6 +259,7 @@ export default function swrPromise<V>(
 export const SwrPromiseStore = Store;
 
 export type {
+  StoreInterface as SwrPromiseStoreInterface,
   PromiseFn as SwrPromiseFunction,
   Options as SwrPromiseOptions,
   CacheNode as SwrPromiseCacheNode,

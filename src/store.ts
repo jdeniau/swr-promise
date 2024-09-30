@@ -4,7 +4,7 @@ type Storage<A, T> = Map<A, T>;
 
 const Storage = Map;
 
-interface Store< A extends any[] = any[], T extends CacheNode = CacheNode> {
+export interface StoreInterface< A extends any[] = any[], T extends CacheNode = CacheNode> {
   set(key: A, value: T): void;
   get(key: A): T | undefined;
   entries(): IterableIterator<[A, T]>;
@@ -13,7 +13,7 @@ interface Store< A extends any[] = any[], T extends CacheNode = CacheNode> {
 }
 
 // V: Value of data, A: Agreement, T: CacheNode
-class Store< A extends any[], T extends CacheNode> {
+class Store< A extends any[], T extends CacheNode> implements StoreInterface<A, T> {
   store: Storage<A, T>;
   constructor() {
     this.store = new Storage<A, T>();
