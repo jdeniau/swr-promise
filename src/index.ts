@@ -37,7 +37,11 @@ interface CacheNode {
   _sie: number;
 }
 
-function createCacheNode(maxAge: number, swr: number = 0, sie: number = 0): CacheNode {
+function createCacheNode(
+  maxAge: number,
+  swr: number = 0,
+  sie: number = 0
+): CacheNode {
   const now = Date.now();
   return {
     s: Status.UNTERMINATED, // status
@@ -70,12 +74,8 @@ export interface Options<V> {
 
 export type PromiseFn<V> = (...args: any[]) => Promise<V>;
 
-let cacheStore: StoreInterface;
 function createCacheStore(): StoreInterface {
-  if (!cacheStore) {
-    cacheStore = new Store();
-  }
-  return cacheStore;
+  return new Store<any, CacheNode>();
 }
 
 /**
