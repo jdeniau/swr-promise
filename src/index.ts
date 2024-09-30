@@ -66,11 +66,9 @@ export interface Options<V> {
   cacheRejected?: (args: any[], error: unknown) => boolean;
   argsEqual?: (a: any[], b: any[]) => boolean;
   storeCreator?: (promiseFn: PromiseFn<V>) => Store;
-  onEmitted?: <E extends OnEmittedEventName>(
-    event: E,
-    info: E extends OnEmittedEventName.GC 
-      ? { cache: Store<any, CacheNode>; gcCount: number } 
-      : { cache: Store<any, CacheNode>; args: any[] }
+  onEmitted?: (
+    event: OnEmittedEventName,
+    info: { cache: Store<any, CacheNode>; gcCount?: number; args?: any[] }
   ) => void;
 }
 
