@@ -12,6 +12,19 @@ enum Status {
   ERRORED = 2,
 }
 
+enum OnEmittedEventName {
+  NO_CACHE = "no-cache",
+  MAX_AGE = "max-age",
+  SWR = "swr",
+  SIE = "sie",
+  BLOCK = "block",
+  GC = "gc",
+  UPDATE_SUCCESS = "update-success",
+  UPDATE_ERROR_SWR = "update-error-swr",
+  UPDATE_ERROR_SIE = "update-error-sie",
+  UPDATE_ERROR_BLOCK = "update-error-block",
+}
+
 interface CacheNode {
   s: Status;
   v: unknown; // value
@@ -53,9 +66,11 @@ export interface Options<V> {
   cacheRejected?: (args: any[], error: unknown) => boolean;
   argsEqual?: (a: any[], b: any[]) => boolean;
   storeCreator?: (promiseFn: PromiseFn<V>) => Store;
-  onEmitted?: (
-    event: string,
-    info: { cache: Store; args?: unknown[]; gcCount?: number }
+  onEmitted?: <E extends OnEmittedEventName>(
+    event: E,
+    info: E extends OnEmittedEventName.GC 
+      ? { cache: Store<any, CacheNode>; gcCount: number } 
+      : { cache: Store<any, CacheNode>; args: any[] }
   ) => void;
 }
 
@@ -134,7 +149,7 @@ export default function swrPromise<V>(
       gcCount += overClearCount;
     }
 
-    onEmitted("gc", { cache: cacheStore, gcCount });
+    onEmitted(OnEmittedEventName.GC, { cache: cacheStore, gcCount });
   }, 5000);
 
   // @ts-expect-error corcurPromise type does use `unknown` type, but the returned promise has the same type as the input promise
@@ -146,7 +161,7 @@ export default function swrPromise<V>(
     ) || [args, createCacheNode(maxAge, swr, sie)];
 
     if (result.s === Status.UNTERMINATED) {
-      onEmitted("no-cache", { cache: cacheStore, args });
+      onEmitted(OnEmittedEventName.NO_CACHE, { cache: cacheStore, args });
       return update(currentArgs);
     }
 
@@ -154,7 +169,7 @@ export default function swrPromise<V>(
 
     const isValid = result.e >= now;
     if (isValid) {
-      onEmitted("max-age", { cache: cacheStore, args });
+      onEmitted(OnEmittedEventName.MAX_AGE, { cache: cacheStore, args });
       return response(result);
     }
 
@@ -162,12 +177,12 @@ export default function swrPromise<V>(
     const isInSIE = result.sie > now;
 
     if (isInSWR || isInSIE) {
-      onEmitted(isInSWR ? "swr" : "sie", { cache: cacheStore, args });
+      onEmitted(isInSWR ? OnEmittedEventName.SWR : OnEmittedEventName.SIE, { cache: cacheStore, args });
       update(currentArgs);
       return response(result);
     }
 
-    onEmitted("block", { cache: cacheStore, args });
+    onEmitted(OnEmittedEventName.BLOCK, { cache: cacheStore, args });
     return update(currentArgs);
 
     function response(result: CacheNode): Promise<CacheNode["v"]> {
@@ -191,7 +206,7 @@ export default function swrPromise<V>(
             cacheStore.set(selfArgs, result);
           }
 
-          onEmitted("update-success", { cache: cacheStore, args: selfArgs });
+          onEmitted(OnEmittedEventName.UPDATE_SUCCESS, { cache: cacheStore, args: selfArgs });
           return response(result);
         })
         .catch((error) => {
@@ -201,7 +216,7 @@ export default function swrPromise<V>(
             result.swr = 0;
             result.sie = now + result._sie;
 
-            onEmitted("update-error-swr", {
+            onEmitted(OnEmittedEventName.UPDATE_ERROR_SWR, {
               cache: cacheStore,
               args: selfArgs,
             });
@@ -213,7 +228,7 @@ export default function swrPromise<V>(
           if (isInSIE) {
             result.swr = 0;
 
-            onEmitted("update-error-sie", {
+            onEmitted(OnEmittedEventName.UPDATE_ERROR_SIE, {
               cache: cacheStore,
               args: selfArgs,
             });
@@ -233,7 +248,7 @@ export default function swrPromise<V>(
             cacheStore.delete(selfArgs);
           }
 
-          onEmitted("update-error-block", {
+          onEmitted(OnEmittedEventName.UPDATE_ERROR_BLOCK, {
             cache: cacheStore,
             args: selfArgs,
           });
@@ -248,4 +263,5 @@ export type {
   PromiseFn as SwrPromiseFunction,
   Options as SwrPromiseOptions,
   CacheNode as SwrPromiseCacheNode,
+  OnEmittedEventName as SwrPromiseOnEmittedEventName,
 };
