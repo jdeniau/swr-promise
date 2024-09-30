@@ -12,7 +12,7 @@ enum Status {
   ERRORED = 2,
 }
 
-enum OnEmittedEventName {
+export enum OnEmittedEventName {
   NO_CACHE = "no-cache",
   MAX_AGE = "max-age",
   SWR = "swr",
@@ -263,5 +263,4 @@ export type {
   PromiseFn as SwrPromiseFunction,
   Options as SwrPromiseOptions,
   CacheNode as SwrPromiseCacheNode,
-  OnEmittedEventName as SwrPromiseOnEmittedEventName,
 };
