@@ -256,8 +256,9 @@ export default function swrPromise<V>(
   });
 }
 
+export const SwrPromiseStore = Store;
+
 export type {
-  Store as SwrPromiseStore,
   PromiseFn as SwrPromiseFunction,
   Options as SwrPromiseOptions,
   CacheNode as SwrPromiseCacheNode,
