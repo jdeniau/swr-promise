@@ -1,5 +1,5 @@
 {
-  "name": "swr-promise",
+  "name": "@mapado/swr-promise",
   "version": "1.2.0",
   "description": "swr-promise is a utility that caches promise results with configurable expiration, error tolerance, and garbage collection to enhance performance and manage cache behavior.",
   "main": "dist/cjs/index.js",
@@ -20,31 +20,28 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Howlcn1997/swr-promise"
+    "url": "https://github.com/mapado/swr-promise"
   },
-  "homepage": "https://github.com/Howlcn1997/swr-promise#readme",
+  "homepage": "https://github.com/mapado/swr-promise#readme",
   "authors": [
-    "howlcn1997"
+    "jdeniau"
   ],
   "license": "MIT",
   "files": [
-    "dist",
-    "compiled"
+    "dist"
   ],
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "concur-promise": "^1.0.2",
+    "lodash.isequal": "^4.5.0",
+    "lodash.throttle": "^4.1.1"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.6",
     "@types/lodash.isequal": "^4.5.8",
     "@types/lodash.throttle": "^4.1.9",
-    "father": "^4.5.0-rc.2"
-  },
-  "dependencies": {
-    "concur-promise": "^1.0.2",
-    "lodash.throttle": "^4.1.1"
-  },
-  "peerDependencies": {
-    "lodash.isequal": "^4.5.0"
+    "father": "^4.5.0"
   }
 }
