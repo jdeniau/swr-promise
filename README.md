@@ -49,7 +49,7 @@ fetchDataSWR("https://api.example.com/data")
 ## Example
 
 ```typescript
-import swrPromise from "swr-promise";
+import swrPromise from "@mapado/swr-promise";
 
 const mock = () =>
   new Promise((resolve) => setTimeout(() => resolve(Math.random()), 1000));
